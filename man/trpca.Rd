@@ -9,11 +9,28 @@ TODO Decompose a matrix into a low-rank component and a sparse component by solv
 TODO This function decomposes a rectangular matrix \var{M} into a low-rank component, and a sparse component, by solving a convex program called Principal Component Pursuit.
 }
 \usage{
-trpca(M,
-     lambda = 1/sqrt(max(dim(M))), mu = prod(dim(M))/(4 * sum(abs(M))),
-     term.delta = 10^(-7), max.iter = 5000, trace = FALSE,
-     thresh.nuclear.fun = thresh.nuclear, thresh.l1.fun = thresh.l1,
-     F2norm.fun = F2norm)
+trpca(M,k,k.start=1,
+             lambda = 1/sqrt(max(dim(M))), #This is ok only for dense matrices
+             lambda2 = 100*lambda, #TODO needs proper L1 sparse vs L2 noise weight setting
+             L2noise = TRUE, #Do decompose into M=L+S+E, or just M=L+S if FALSE
+             mu = prod( dim(M)) / (4*sum(abs(M)) ), #This is ok only for dense matrices
+             mu.max = mu*100,  #Stops mu from getting to large too fast 
+                               #(i.e. from caring too much for constraint than objective.function)
+             mu.min = mu/200,   #If smallest computed SV is larger than 1/mu.min we increase k.current
+                               #and compute one more SV in next iteration
+             mu.growth.ratio=1.1,
+             term.delta=10^(-7),
+             max.iter=5000,
+             trace=FALSE,
+             message.iter=100,
+             n.iter.without.L2noise=5, #Number of start iterations without decomposing L2noise
+             #thresh.nuclear.fun=trpca.thresh.nuclear.sparse2,
+             #thresh.l1.fun=thresh.l1.sparse,
+             #zero.matrix.fun=zero.matrix.sparse,             
+             thresh.nuclear.fun=trpca.thresh.nuclear,
+             thresh.l1.fun=thresh.l1,
+             zero.matrix.fun=zero.matrix,                
+             F2norm.fun=F2norm)
 }
 %- maybe also 'usage' for other objects documented here.
 
