@@ -2,7 +2,7 @@ Package: rpca
 Type: Package
 Title: RobustPCA: Decompose a Matrix into Low-Rank and Sparse
         Components, truncated version, with additional L2 noise separation option
-Version: 0.3.1
+Version: 0.3.2
 Date: 2018-01-11
 Author: Maciek Sykulski [aut, cre],
         Krzysztof Gogolewski [aut]

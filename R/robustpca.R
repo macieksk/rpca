@@ -63,7 +63,8 @@ thresh.l1.sparse<-cmpfun(function(x,thr){
 zero.matrix<-function(n,m)matrix(0,nrow=n,ncol=m)                                                                       
 zero.matrix.sparse<-function(n,m)sparseMatrix(i=numeric(0),j=numeric(0),x=numeric(0),dims=c(n,m))                                                                       
 
-trpca<-function(M,k,k.start=1,
+trpca<-function(M, #k,
+             k.start=1,
              lambda = 1/sqrt(max(dim(M))), #This is ok only for dense matrices
              lambda2 = 100*lambda, #TODO needs proper L1 sparse vs L2 noise weight setting
              L2noise = TRUE, #Do decompose into M=L+S+E, or just M=L+S if FALSE

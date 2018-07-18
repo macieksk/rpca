@@ -9,7 +9,8 @@ TODO Decompose a matrix into a low-rank component and a sparse component by solv
 TODO This function decomposes a rectangular matrix \var{M} into a low-rank component, and a sparse component, by solving a convex program called Principal Component Pursuit.
 }
 \usage{
-trpca(M,k,k.start=1,
+trpca(M,     #k,
+             k.start=1,
              lambda = 1/sqrt(max(dim(M))), #This is ok only for dense matrices
              lambda2 = 100*lambda, #TODO needs proper L1 sparse vs L2 noise weight setting
              L2noise = TRUE, #Do decompose into M=L+S+E, or just M=L+S if FALSE
