@@ -16,6 +16,6 @@ install_github("macieksk/rpca")
 ```
 
 # Reference
-Gogolewski K.*, Sykulski M.*, Chung N.C., Gambin A. (2018) Truncated Robust Principal Component Analysis and Noise Reduction for Single Cell RNA-seq Data. ISBRA 2018. Lecture Notes in Computer Science. https://link.springer.com/chapter/10.1007/978-3-319-94968-0_32
+Gogolewski K.\*, Sykulski M.\*, Chung N.C., Gambin A. (2018) Truncated Robust Principal Component Analysis and Noise Reduction for Single Cell RNA-seq Data. ISBRA 2018. Lecture Notes in Computer Science. https://link.springer.com/chapter/10.1007/978-3-319-94968-0_32
 
 Candes, E. J., Li, X., Ma, Y., Wright, J. (2011) Robust principal component analysis? JACM
