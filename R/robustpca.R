@@ -112,7 +112,7 @@ trpca<-function(M, #k,
     converged<-FALSE
     #while (k.current<=k && !converged) {
     while (j<max.iter && !converged) {
-    message(paste("***** \n LOOP WITH k=",k.current,", q=",q,sep=""))
+    message(paste("***** \n LOOP WITH k=",k.current,sep="")) #", q=",q
     
     if( j==0 || (imu>=(1/mu.min))) {
       L<-S<-Yimu<-zero.matrix.fun(dm[1],dm[2])
