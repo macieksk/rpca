@@ -145,7 +145,8 @@ trpca<-function(M, #k,
 
         # 1. L opt step
         # L.svd = thr.nuclear.l1( (lamda2/((1/imu) * l2.norm(YYimu)))*YYimu + L )
-        L.svd <- thresh.nuclear.fun( dd*YYimu + L, imu, k.current)
+        if (dd==1) { ddYYimu<-YYimu } else { ddYYimu<-dd*YYimu }
+        L.svd <- thresh.nuclear.fun( ddYYimu + L, imu, k.current)
         
         if(trace & (i%%message.iter==0)){
           print("----- SUMMARY AFTER L opt step -----")
@@ -201,6 +202,12 @@ trpca<-function(M, #k,
             # 2. E opt step
             # Update E by updating YYimu 
             YYimu <- Yimu + MS - L        # newL from above
+            # IGNORE l2 NOISE 
+            if (j<n.iter.without.L2noise | ! L2noise ) {
+                dd<-1
+                ddYYimu<-YYimu
+                normYYimu<-1 ##For the purpose of l2.normE generation in trace
+            } else {
             #normYYimu <- l2.norm(YYimu) # sqrt(sum(YYimu^2))
             ## The trick below is to change dimension to long vector
             ## and compute crossprod which uses matrix operations
@@ -213,21 +220,19 @@ trpca<-function(M, #k,
             dim(YYimu)<-.dYYimu
             ##
             stopifnot(normYYimu != 0)
-            # IGNORE l2 NOISE 
-            if (j<n.iter.without.L2noise | ! L2noise ) {
-                dd<-1                
-            } else {
                 dd <- lambda2*imu / normYYimu            
+                if (dd > 1 ) cat(paste("\n[DD INFO] After optimization dd > 1 (dd = ", round(dd,4), ")", sep=""))
                 dd<-min(1,dd)
                 #print(c(dd=dd))
                 #stopifnot(dd<(1-tolerance))
+                ddYYimu<-dd*YYimu
             }
 
             # 3. S opt step
             ### argmin S =   takie samo wyliczenie
             ### = thr.op.l1( (l2/(m*|YYimu|))*YYimu + S )
             ### S = thr.op.l1( dd*YYimu + S )
-            S <- thresh.l1.fun( dd*YYimu + S, limu)
+            S <- thresh.l1.fun( ddYYimu + S, limu)
 
             # Update help variables 
             MS <- M-S
@@ -236,6 +241,12 @@ trpca<-function(M, #k,
             # 4. E opt step
             # Update E by updating YYimu 
             YYimu <- Yimu + MLS
+            # IGNORE L2 NOISE 
+            if (j<n.iter.without.L2noise | ! L2noise ) {
+                dd<-1
+                ddYYimu<-YYimu
+                normYYimu<-1 ##For the purpose of l2.normE generation in trace
+            } else {
             #normYYimu <- l2.norm(YYimu)
             ##For the description of the trick read some lines above
             .dYYimu<-dim(YYimu)
@@ -244,15 +255,11 @@ trpca<-function(M, #k,
             dim(YYimu)<-.dYYimu
             ##
             stopifnot(normYYimu != 0)            
-            # IGNORE L2 NOISE 
-            if (j<n.iter.without.L2noise | ! L2noise ) {
-                dd<-1                
-            } else {
                 dd <- lambda2*imu/normYYimu
                 if (dd > 1 ) cat(paste("\n[DD INFO] After optimization dd > 1 (dd = ", round(dd,4), ")", sep=""))
                 dd<-min(1,dd)
-                
                 #stopifnot(dd<(1-tolerance))
+                ddYYimu<-dd*YYimu
             }
 
 
@@ -271,7 +278,7 @@ trpca<-function(M, #k,
             #Yimu =  dd*MLS + dd*Yimu
 
             Yimuold <- Yimu
-            Yimu <- dd*YYimu #= dd*(Yimu+MLS) 
+            Yimu <- ddYYimu #= dd*(Yimu+MLS)
             #if (i==0) Yimu<-Yimu/2
             #This above one line is enough, though MLSE needs to be computed for convergence check
             MLSE = Yimu - Yimuold
