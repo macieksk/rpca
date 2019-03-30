@@ -47,7 +47,7 @@ trpca.thresh.nuclear.sparse1<-cmpfun(function(...)trpca.thresh.nuclear(...,
                                                          thr.op.fun=thr.op.sparse,
                                                          matrix.mul.fun=function(a,b){m2sparseM(a)%*%b}))
 
-# This is faster for average to large matrices due to Matrix sparse matrices not being parallel                                                                       
+# The one below is probably faster than the above for large matrices due to Matrix sparse matrices not being parallel
 trpca.thresh.nuclear.sparse2<-cmpfun(function(...)trpca.thresh.nuclear(...,
                                                          thr.op.fun=thr.op.sparse,
                                                          matrix.mul.fun=function(a,b)m2sparseM(a%*%b)))
@@ -171,6 +171,7 @@ trpca<-function(M, #k,
             if (trace & (i%%message.iter==0)) { #DEBUG
             print("----- First iteration like case is.na(imu) -----")
             print(data.frame(k.too.small=L.svd$k.too.small,L.svd.thr=L.svd$thr))
+            ##TODO optimize below l2.norm computation with the crossprod trick
             print(data.frame(dd=dd,normYYimu=l2.norm(YYimu),normL=F2norm(L),
                 mu=1/imu,imu=imu))
             print("----- ----- ----- -----  ----- ----- ----- -----")
@@ -350,13 +351,15 @@ trpca<-function(M, #k,
             }
             break;        
         }
-    }
+    } ## end while(TRUE)
     E<-(1-dd)*YYimu
     
     #local.max.iter.phase<-local.max.iter.phase*q #No longer used
     #local.max.iter<-(local.max.iter-i)+local.max.iter.phase    
-    k.current=k.current+1        #TODO is this still needed? TOTEST when commented out 
-    }
+    k.current=k.current+1        ##TO DO DONE? is this still needed? TOTEST when commented out 
+                                 ##Looks like this come into play when (L.svd$k.too.small) above 
+                                 ##and  imu<-min(tail(L.svd$d,1),1/mu.min) is set to the 1/mu.min
+    } ## end while (j<max.iter && !converged)
     final.delta<-resid.norm*term.delta/term.norm
     if (!converged) {
         warning(paste("rpca did not converge after",i,"iterations, final.delta=",final.delta))        
